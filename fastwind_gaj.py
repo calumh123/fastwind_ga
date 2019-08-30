@@ -189,18 +189,18 @@ def run_fastwind(run_dir, output_dir, lines_dic, metallicity, param_set):
         x = np.genfromtxt(line, max_rows=161).T
         wavelength = x[2]
         flux = x[4]
-        new_line_file_name = model_run_id / line_name / '.prof'
+        new_line_file_name = model_run_id / f'{line_name}.prof'
         np.savetxt(new_line_file_name, np.array([wavelength, flux]).T,
                    header='#161     #0', comments='')
 
     for line, val in lines_dic.items():
-        new_line_file_name = model_run_id / line / '.prof'
+        new_line_file_name = model_run_id / (line + '.prof')
         broad_command = (f"python broaden.py -f {new_line_file_name}"
                          f" -r {val['resolution']} -v {param_set['vrot']} -m -1")
         # unsure in shell has to be True
         subprocess.run(broad_command, shell=True, check=True)
         # double suffix?
-        final_new_line_file_name = new_line_file_name / '.fin'
+        final_new_line_file_name = f'{new_line_file_name}.fin'
         chi2, dof = calculate_chi2(final_new_line_file_name, val)
         total_chi2 += chi2
         total_deg_of_freedom += dof
